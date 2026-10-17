@@ -1,11 +1,11 @@
 # Amir Tutor UI
 
-English learning game (EN/AR) for Algerian students. Next.js 16 · TypeScript · Tailwind 4 · TanStack Query.
+English learning game (EN/AR) for Algerian students. Next.js 16 · TypeScript · Tailwind 4 · TanStack Query · Supabase.
 
 ```bash
-cp .env.example .env   # NEXT_PUBLIC_MOCK=true → mock content + localStorage progress
+cp .env.example .env   # set the Supabase URL + publishable key, or NEXT_PUBLIC_MOCK=true for no backend
 npm install
 npm run dev            # http://localhost:3000
 ```
 
-Content lives in `mock/` and progress in localStorage until Supabase is wired — see `CLAUDE.md`.
+Content comes from Supabase (`get_content()`), progress is per user; `mock/` is the offline copy and the seed source. See `CLAUDE.md`.

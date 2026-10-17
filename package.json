@@ -6,9 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "tsx scripts/seed-supabase.ts",
+    "verify:content": "tsx --env-file=.env scripts/verify-content.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "2.118.0",
     "@tanstack/react-query": "^5.104.2",
     "next": "16.2.10",
     "react": "19.2.4",
@@ -24,6 +27,7 @@
     "prettier": "^3.9.4",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }

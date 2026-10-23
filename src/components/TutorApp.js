@@ -232,6 +232,7 @@ const gradeTopics=c=>{const dict=Object.fromEntries(D(VOC[c]).map(x=>[x.en,x])),
  (TEN[c]||[]).forEach(([k,term])=>r.push({...mkT(c,k,TN[k][0],TN[k][1],TN[k][2],term,TG[k]()),k:"g"}));
  r.push({...mkT(c,"xo","Build the Sentence","ركّب الجملة","🧱",0,[G("os","Build the Sentence","ركّب الجملة","🧱",ordG)]),k:"e"},{...mkT(c,"xd","Dialogues","الحوارات","💬",0,[G("dl","Choose the Reply","اختر الرد","💬",dlgG)]),k:"e"},{...mkT(c,"xr","Read & Answer","اقرأ وأجب","📖",0,[G("rd","Reading Questions","أسئلة القراءة","📖",readG)]),k:"e"});
  if(c==="4AM")r.push({...mkT(c,"xb","BEM Reading","قراءة (BEM)","📖",0,[G("bm","True / False / Not Mentioned","صح / خطأ / لم يُذكر","📖",bemG)]),k:"e"},{...mkT(c,"xp","Pronunciation","النطق","🔊",0,[G("pe","-ed endings","نهاية ed","🔊",edG),G("ps2","-s endings","نهاية s","🔊",sendG)]),k:"e"},{...mkT(c,"xu","Punctuation","علامات الترقيم","✍️",0,[G("pn","Punctuation & Capitals","الترقيم والحروف الكبيرة","✍️",punG)]),k:"e"});
+ if(c==="5AP")r.push({...mkT(c,"jv","Jobs Adventure","مغامرة المهن","🌟",1,[{...G("fx","Vocab Explorer","مستكشف المفردات","🃏",()=>[]),mode:"cards"},G("wa","Who Am I?","من أنا؟","🕵️",wai5),G("sb","Sentence Builder","بناء الجمل","🧱",sb5),{...G("m1","Memory: Job & Tool","ذاكرة: مهنة وأداة","🧠",()=>[]),mode:"memory",cfg:{kind:"tool"}},{...G("m2","Memory: Word & Emoji","ذاكرة: كلمة وصورة","🎴",()=>[]),mode:"memory",cfg:{kind:"emoji"}}]),k:"v",pos:"n"});
  if(c==="4AP"||c==="5AP")r.push(...jobTopicsP(c));
  return r};
 const GEN={A1:["3AP","4AP","5AP"],A2:["1AM","2AM"],B1:["3AM","4AM","1AS"],B2:["2AS","3AS"]};
@@ -266,6 +267,70 @@ function Play({game,onDone,onQuit}){
    <div className="font-semibold">${q.exp}</div>${why?html`<div className="font-bold">${why}</div>`:null}<div dir="rtl" className="font-semibold">${q.expAr}</div>
    <button onClick=${next} className="mt-3 w-full rounded-2xl bg-yellow-400 text-blue-900 font-extrabold py-3 shadow">${i+1>=T?"See results (النتيجة) 🏆":"Next (التالي) ➡"}</button></div>`:null}
  </div>`}
+const J5R=`My father|carpenter|He|works|in a workshop|a hammer|makes furniture||hammer
+Your mother|homemaker|She|works|in the kitchen|a pot|cooks food||pot
+His brother|mechanic|He|works|in a garage|a spanner and gloves|repairs cars||spanner
+Her sister|nurse|She|works|in a hospital|a stethoscope|takes care of patients||stethoscope
+Our uncle|baker|He|works|in a bakery|a rolling pin|bakes bread||rolling pin
+Their aunt|dentist|She|works|in a clinic|a dental mirror|checks teeth||dental mirror
+My cousin|builder|He|works|on a construction site|a hammer and a ladder|builds houses||ladder
+Your nephew|policeman|He|works|at a police station|a radio|helps people||radio
+Her niece|tailor|She|works|in a workshop|a sewing machine and scissors|makes clothes||sewing machine
+His grandfather|farmer|He|works|on a farm|a tractor|grows vegetables||tractor
+My grandmother|gardener|She|works|in a garden|a hose|waters flowers||trowel
+Our father|electrician|He|works|in houses|pliers and gloves|fixes lights||pliers
+Your uncle|taxi driver|He|works|in his taxi|a map|drives people around the city||map
+Their cousin|pilot|He|works|at an airport|a headset|flies planes||headset
+My brother|sailor|He|works|on a ship|a rope|sails ships||rope
+Her father|journalist|He|works|at a TV station|a microphone|reports the news||microphone
+His mother|teacher|She|works|at a school|a book|teaches English||book
+Our cousin|scientist|He|works|in a laboratory|a microscope|does experiments||microscope
+My aunt|vet|She|works|in an animal clinic|gloves|treats animals||gloves
+Your sister|surgeon|She|works|in a hospital|a scalpel and gloves|performs operations||scalpel
+His uncle|barber|He|works|in a barbershop|scissors|cuts hair||scissors
+Her grandfather|potter|He|works|in a pottery workshop||makes jars from clay||clay
+Their grandmother|florist|She|works|in a flower shop|scissors|sells flowers||ribbon
+My nephew|firefighter|He|works|at a fire station|a hose and a helmet||puts out fires|hose
+Your niece|photographer|She|works|in a studio|a camera|takes photos||camera
+Our son|painter|He|works|on a building site|a ladder and a paintbrush|paints walls||paintbrush
+Their daughter|chef|She|works|in a restaurant|a pan|cooks meals||pan
+My cousin|bus driver|He|works|on a bus|a ticket machine|drives a bus||ticket machine
+Her uncle|shopkeeper|He|works|in a shop|a cash register|sells food||cash register
+His daughter|engineer|She|works|in a factory|a helmet and a laptop||designs machines|laptop
+My grandfather|dust man|He|works|in the streets|a truck and gloves|cleans the streets||truck
+Your daughter|architect|She|works|in an office||draws plans for houses||ruler
+Our mother|librarian|She|works|in a library|a book and a computer||helps readers find books|computer
+Their son|student|He|studies|at a school|a school bag||goes to school|school bag
+|fisherman|He|works|on a boat|a net|catches fish||net`;
+const CAT5={"Family": ["👪", "father|👨;mother|👩;brother|👦;sister|👧;uncle|🧔;aunt|👩;cousin|🧒;nephew|👦;niece|👧;grandfather|👴;grandmother|👵;parents|👪;grandparents|👴;son|👦;daughter|👧;husband|🤵;wife|👰"], "Jobs": ["💼", "carpenter|🔨;homemaker|🏠;mechanic|🔧;nurse|🩺;baker|🥖;dentist|🦷;builder|👷;policeman|👮;tailor|🧵;farmer|🌾;gardener|🌻;electrician|💡;taxi driver|🚕;pilot|✈️;sailor|⚓;journalist|📰;teacher|📚;scientist|🔬;vet / veterinarian|🐾;surgeon|😷;barber|💈;potter|🏺;florist|💐;firefighter / fireman|🚒;photographer|📷;painter|🎨;chef|🍳;bus driver|🚌;shopkeeper|🏪;engineer|⚙️;dust man|🗑️;architect|📐;librarian|📖;student|🎒;fisherman|🎣;Gendarme|🚔"], "Tools": ["🛠️", "hammer|🔨;pot|🍲;spanner / wrench|🔧;gloves|🧤;stethoscope|🩺;rolling pin|🥖;dental mirror|🦷;ladder|🪜;radio|📻;sewing machine|🧵;scissors|✂️;tractor|🚜;trowel|🧱;hose|🚿;pliers|🔧;map|🗺️;headset|🎧;rope|➰;microphone|🎤;book|📖;microscope|🔬;scalpel|🔪;clay|🟤;pottery wheel|🏺;ribbon|🎀;helmet|⛑️;camera|📷;paintbrush|🖌️;pan|🍳;ticket machine|🎫;cash register|💰;laptop|💻;truck|🚚;pencil|✏️;ruler|📏;computer|🖥️;school bag|🎒;net|🥅"], "Actions": ["🏃", "make furniture|🪑;cook food|🍲;repair cars|🚗;take care of patients|🏥;bake bread|🍞;check teeth|🦷;build houses|🏠;help people|🤝;make clothes|👗;grow vegetables|🥕;water flowers|🌷;fix lights|💡;drive people around the city|🚕;fly planes|✈️;sail ships|🚢;report the news|📰;teach English|🗣️;do experiments|🧪;treat animals|🐶;perform operations|⚕️;cut hair|💇;make jars from clay|🏺;sell flowers|💐;put out fires|🔥;take photos|📸;paint walls|🎨;cook meals|🍽️;drive a bus|🚌;sell food|🛒;design machines|⚙️;clean the streets|🧹;draw plans for houses|📐;help readers find books|📚;study|📖;go to school|🏫;catch fish|🎣"], "Places": ["🏢", "workshop|🛠️;kitchen|🍳;garage|🚗;hospital|🏥;bakery|🥖;clinic|🩺;construction site / building site|🏗️;police station|🚓;farm|🚜;garden|🌳;houses|🏘️;taxi|🚕;airport|✈️;ship|🚢;TV station|📺;school|🏫;laboratory|🔬;animal clinic|🐾;barbershop|💈;pottery workshop|🏺;flower shop|💐;fire station|🚒;studio|📸;restaurant|🍽️;bus|🚌;shop|🏪;factory|🏭;streets|🛣️;office|🏢;library|📚;boat|🛶;primary school|🏫"]};
+const emap=k=>Object.fromEntries(CAT5[k][1].split(";").map(x=>{const[w,e]=x.split("|");return[w.split(" / ")[0],e]}));
+const JE=emap("Jobs"),TE=emap("Tools");
+const an=w=>/^[aeiou]/i.test(w)?"an":"a";
+const ta=t=>/s$/.test(t)?t:`${an(t)} ${t}`;
+const fp1=w=>/ies$/.test(w)?w.replace(/ies$/,"y"):/(ches|shes|sses|xes|zes|oes)$/.test(w)?w.replace(/es$/,""):w.replace(/s$/,"");
+const fp=a=>{const w=a.split(" ");w[0]=fp1(w[0]);return w.join(" ")};
+const J5=J5R.split("\n").map(l=>{const[rel,job,P,verb,pp,tools,act,ma,mt]=l.split("|"),tl=[...(tools?tools.split(" and ").map(x=>x.replace(/^(a|an) /,"")):[]),mt];return{rel,job,P,verb,pp,tools,act:act||ma,sa:act,mt,tl:[...new Set(tl)]}});
+const akey=a=>/^(cook|help)/.test(a)?a.split(" ")[0]:a;
+const fits=(j,f)=>(!f.tool||j.tl.includes(f.tool))&&(!f.pp||j.pp===f.pp)&&(!f.act||akey(j.act)===akey(f.act));
+const wai5=()=>ord(J5,14).map(j=>{const mk=[{tool:pick(j.tl,1)[0],act:j.act,t:"ta"},{pp:j.pp,act:j.act,t:"pa"},{pp:j.pp,tool:pick(j.tl,1)[0],t:"pt"}];let f=null,c="";for(const x of shuffle(mk)){if(J5.filter(y=>fits(y,x)).length===1){f=x;break}}f=f||mk[0];const my=j.pp.replace(/\bhis\b/,"my");c=f.t==="ta"?`I have ${ta(f.tool)} and I ${fp(j.act)}.`:f.t==="pa"?`I work ${my}. I ${fp(j.act)}.`:`I work ${my} and I have ${ta(f.tool)}.`;const bad=J5.filter(y=>y.job!==j.job&&!fits(y,f)),rel=bad.filter(y=>y.tl.some(t=>j.tl.includes(t))||y.pp===j.pp),d=pick([...new Set([...pick(rel,2),...pick(bad,3)].map(y=>y.job))],2),opts=shuffle([j.job,...d]),lab=Object.fromEntries(opts.map(o=>[o,`${JE[o]||""} ${o}`]));return{type:"mc",prompt:"Who am I?",promptAr:"من أنا؟",big:"🕵️ "+c,opts,ans:j.job,lab,say:c,exp:`I am ${an(j.job)} ${j.job}.`,expAr:`أنا ${j.job}.`}});
+const SB5=J5.filter(j=>j.rel).flatMap(j=>{const jt=j.job==="homemaker"?"house wife":j.job,e=JE[j.job]||"🧱";return[`${j.rel} is ${an(jt)} ${jt}.`,`${j.P} ${j.verb} ${j.pp}.`,j.tools?`${j.P} has ${j.tools}.`:"",j.sa?`${j.P} ${j.sa}.`:""].filter(Boolean).map(t=>({t,e}))}).sort((a,b)=>a.t.split(" ").length-b.t.split(" ").length);
+const sb5=()=>ord(SB5,12).map(o=>{const w=o.t.split(" ");let sh,g=0;do{sh=shuffle(w);g++}while(sh.join(" ")===o.t&&g<9);return{type:"ord",prompt:"Put the words in the correct order",promptAr:"رتّب الكلمات لتكوين جملة صحيحة",big:o.e,words:sh,ans:o.t,exp:o.t,expAr:"هذه هي الجملة الصحيحة."}});
+const MTOOLS=J5.filter(j=>j.mt&&TE[j.mt]).map(j=>({a:{t:j.job,e:JE[j.job]||""},b:{t:j.mt,e:TE[j.mt]}}));
+const MWORDS=Object.values(CAT5).flatMap(([i,str])=>str.split(";").map(x=>{const[w,e]=x.split("|");return{a:{t:w,e:""},b:{t:"",e}}}));
+function Flash({game,onDone,onQuit}){const names=Object.keys(CAT5),[cat,setCat]=useState(names[0]),[fl,setFl]=useState({}),items=CAT5[cat][1].split(";").map(x=>x.split("|")),seen=Object.keys(fl).filter(k=>fl[k]).length;
+ return html`<div><${Back} onClick=${onQuit} en="Quit" ar="خروج"/>
+ <div className="flex flex-wrap gap-2 justify-center mb-3">${names.map(n=>html`<button key=${n} onClick=${()=>setCat(n)} className=${"rounded-full px-4 py-2 font-extrabold border-2 "+(n===cat?"bg-yellow-400 border-yellow-500 text-blue-900":"bg-white border-blue-300 text-blue-800")}>${CAT5[n][0]} ${n}</button>`)}</div>
+ <div className="text-center text-sm font-bold text-blue-800 mb-2">👆 Tap a card to flip it · اضغط على البطاقة لتقلبها</div>
+ <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">${items.map(([w,e])=>{const k=cat+w,on=!!fl[k];return html`<button key=${k} onClick=${()=>{if(!on){speak(w.split(" / ")[0]);sfx.ok()}setFl({...fl,[k]:!on})}} className="fc h-32 w-full"><div className=${"fi "+(on?"on":"")}><div className="ff bg-gradient-to-br from-blue-600 to-sky-500 text-white text-4xl shadow-lg">❓<span className="text-xs font-bold mt-1">${CAT5[cat][0]} ${cat}</span></div><div className="fb bg-white border-4 border-yellow-300 shadow-lg p-1"><div className="text-5xl">${e}</div><div className="font-extrabold text-blue-900 text-center leading-tight text-sm sm:text-base">${w}</div></div></div></button>`})}</div>
+ <div className="mt-4 flex items-center justify-between gap-2"><span className="font-bold text-blue-800">${seen} / ${Object.values(CAT5).reduce((a,c)=>a+c[1].split(";").length,0)} cards</span><button onClick=${()=>{sfx.win();onDone(100,100,[])}} className="rounded-2xl bg-blue-700 text-white font-extrabold px-5 py-2 shadow">Finish ✔ (إنهاء)</button></div></div>`}
+function Memory({game,onDone,onQuit}){const [n,setN]=useState(0),[cards,setCards]=useState([]),[open,setOpen]=useState([]),[done,setDone]=useState([]),[moves,setMoves]=useState(0),tool=game.cfg.kind==="tool";
+ const start=k=>{const src=pick(tool?MTOOLS:MWORDS,k),cs=[];src.forEach((p,i)=>{cs.push({p:i,t:p.a.t,e:p.a.e});cs.push({p:i,t:p.b.t,e:p.b.e})});setCards(shuffle(cs));setN(k);setOpen([]);setDone([]);setMoves(0)};
+ useEffect(()=>{if(open.length===2){const[a,b]=open,ok=cards[a].p===cards[b].p,t=setTimeout(()=>{if(ok){setDone(d=>[...d,cards[a].p]);sfx.ok()}else sfx.bad();setOpen([])},ok?500:900);setMoves(m=>m+1);return()=>clearTimeout(t)}},[open]);
+ useEffect(()=>{if(n&&done.length===n){const t=setTimeout(()=>{sfx.win();onDone(Math.max(10,Math.min(100,Math.round(n/Math.max(moves,1)*100))),100,[])},900);return()=>clearTimeout(t)}},[done]);
+ const flip=i=>{if(open.length>=2||open.includes(i)||done.includes(cards[i].p))return;if(cards[i].t)speak(cards[i].t.split(" / ")[0]);setOpen([...open,i])};
+ if(!n)return html`<div className="text-center"><${Back} onClick=${onQuit} en="Quit" ar="خروج"/><div className="text-6xl">🧠</div><h2 className="text-2xl font-extrabold text-blue-900 mt-2">${tool?"Match the job with its tool":"Match the word with its picture"}</h2><div dir="rtl" className="font-bold text-blue-600 mb-4">${tool?"طابق المهنة مع أداتها":"طابق الكلمة مع صورتها"}</div><div className="grid gap-3 max-w-xs mx-auto">${[[6,"Easy 🙂","سهل"],[8,"Medium 😎","متوسط"],[10,"Hard 🔥","صعب"]].map(([k,en,ar])=>html`<button key=${k} onClick=${()=>start(k)} className="rounded-2xl bg-yellow-400 text-blue-900 font-extrabold py-3 shadow">${en} · ${k} pairs (${ar})</button>`)}</div></div>`;
+ return html`<div><${Back} onClick=${onQuit} en="Quit" ar="خروج"/><div className="flex justify-between text-sm font-bold text-blue-800 mb-3"><span>🎯 ${done.length} / ${n}</span><span>👣 ${moves}</span></div>
+ <div className=${"grid gap-2 "+(n>8?"grid-cols-4 sm:grid-cols-5":"grid-cols-3 sm:grid-cols-4")}>${cards.map((c,i)=>{const on=open.includes(i)||done.includes(c.p);return html`<button key=${i} onClick=${()=>flip(i)} className="fc h-24 sm:h-28 w-full"><div className=${"fi "+(on?"on":"")}><div className="ff bg-gradient-to-br from-blue-600 to-sky-500 text-white text-3xl shadow">❓</div><div className=${"fb p-1 shadow border-4 "+(done.includes(c.p)?"bg-green-100 border-green-400":"bg-white border-yellow-300")}><div className=${c.t?"text-3xl":"text-5xl"}>${c.e}</div>${c.t?html`<div className="font-extrabold text-blue-900 text-xs sm:text-sm text-center leading-tight">${c.t}</div>`:null}</div></div></button>`})}</div></div>`}
 function App(){
  const [scr,setScr]=useState("home"),[path,setPath]=useState(null),[lvl,setLvl]=useState(null),[topic,setTopic]=useState(null),[game,setGame]=useState(null),[res,setRes]=useState(null);
  const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
@@ -304,7 +369,7 @@ function App(){
  else if(scr==="hub")body=html`<div><${Back} onClick=${()=>setScr(topic.id==="miss"?"kind":"topic")}/><${Title} en=${topic.n} ar=${topic.ar}/>
   <div className="text-center font-bold text-blue-700 mb-3">🎮 Game Hub (اختر لعبة)</div>
   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">${topic.games.map((g,k)=>html`<${Tile} key=${g.id} onClick=${()=>{setGame(g);setScr("play")}} top=${g.e} en=${`Game ${k+1}: ${g.n}`} ar=${g.nAr} sub=${stars(g)}/>`)}</div></div>`;
- else if(scr==="play")body=html`<${Play} key=${game.id+Date.now()} game=${game} onDone=${finish} onQuit=${()=>setScr("hub")}/>`;
+ else if(scr==="play")body=game.mode==="cards"?html`<${Flash} key=${game.id+Date.now()} game=${game} onDone=${finish} onQuit=${()=>setScr("hub")}/>`:game.mode==="memory"?html`<${Memory} key=${game.id+Date.now()} game=${game} onDone=${finish} onQuit=${()=>setScr("hub")}/>`:html`<${Play} key=${game.id+Date.now()} game=${game} onDone=${finish} onQuit=${()=>setScr("hub")}/>`;
  else{const p=res.s/res.t,wrong=res.log.filter(x=>!x.ok),right=res.log.filter(x=>x.ok),vb=verbsOf(topic.c);body=html`<div className="text-center"><div className="text-7xl">${p>=0.8?"🏆":p>=0.5?"👏":"💪"}</div>
   <h2 className="text-3xl font-extrabold text-blue-900 mt-2">${p>=0.8?"Excellent!":p>=0.5?"Good job!":"Keep trying!"}</h2><div dir="rtl" className="text-xl font-bold text-blue-600">${p>=0.8?"ممتاز!":p>=0.5?"عمل جيد!":"واصل المحاولة!"}</div>
   <div className="mt-4 mx-auto max-w-xs rounded-3xl bg-white border-4 border-yellow-400 p-5 shadow-lg"><div className="text-5xl font-extrabold text-blue-800">${res.s} / ${res.t}</div><div className="text-yellow-500 text-3xl">${"★".repeat(Math.ceil(p*3))}${"☆".repeat(3-Math.ceil(p*3))}</div></div>

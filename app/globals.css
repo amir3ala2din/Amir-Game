@@ -5,13 +5,22 @@
 :root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:radial-gradient(circle at 12% 8%,#fde68a 0,transparent 32%),radial-gradient(circle at 92% 18%,#93c5fd 0,transparent 38%),radial-gradient(circle at 50% 100%,#bfdbfe 0,transparent 45%),#eff6ff;font-family:system-ui,"Segoe UI",Tahoma,Arial,sans-serif}
-.fl{animation:fl 3s ease-in-out infinite}@keyframes fl{50%{transform:translateY(-12px) rotate(8deg)}}
-.cta{animation:pp 1.8s ease-in-out infinite}@keyframes pp{50%{transform:scale(1.04)}}
-.mq{animation:mq 28s linear infinite}@keyframes mq{to{transform:translateX(-50%)}}
-.hf{font-family:var(--font-baloo),"Baloo Bhaijaan 2","Segoe UI",Tahoma,Arial,sans-serif}
-.hd{font-family:var(--font-lalezar),"Lalezar","Baloo Bhaijaan 2","Segoe UI",Tahoma,Arial,sans-serif;letter-spacing:.02em;font-weight:400}
+.fl{animation:fl 3s ease-in-out infinite}
+@keyframes fl{50%{transform:translateY(-12px) rotate(8deg)}}
+.cta{animation:pp 1.8s ease-in-out infinite}
+@keyframes pp{50%{transform:scale(1.04)}}
+.mq{animation:mq 28s linear infinite}
+@keyframes mq{to{transform:translateX(-50%)}}
+.hf{font-family:"Baloo Bhaijaan 2","Segoe UI",Tahoma,Arial,sans-serif}
+.hd{font-family:"Lalezar","Baloo Bhaijaan 2","Segoe UI",Tahoma,Arial,sans-serif;letter-spacing:.02em;font-weight:400}
 .fc{perspective:700px;background:none;border:0;padding:0}
 .fi{position:relative;width:100%;height:100%;transition:transform .45s;transform-style:preserve-3d}
 .fi.on{transform:rotateY(180deg)}
 .ff,.fb{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:1rem}
 .fb{transform:rotateY(180deg)}
+.fly-l{animation:fyl .65s ease-in forwards}
+@keyframes fyl{to{transform:translate(-80px,260px) scale(.3);opacity:0}}
+.fly-r{animation:fyr .65s ease-in forwards}
+@keyframes fyr{to{transform:translate(80px,260px) scale(.3);opacity:0}}
+.shake{animation:shk .4s}
+@keyframes shk{25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}

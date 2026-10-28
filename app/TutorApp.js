@@ -1,4 +1,3 @@
-/* eslint-disable */
 "use client";
 // Tutor Amir – English Learning Adventure (client-only component).
 // Content (vocabulary, grammar banks, programme data) and game engine live in this file; UI is built with htm + React.
@@ -31,7 +30,8 @@ JOBS_DB.push(...[["lawyer","محامٍ","👨‍⚖️","court","المحكمة"
 "run|ran|ركض|in the park;walk|walked|مشى|to the market;swim|swam|سبح|in the sea;sing|sang|غنّى|a song;draw|drew|رسم|a picture;listen|listened|استمع|to music;learn|learned|تعلّم|new words;teach|taught|علّم|the pupils;think|thought|فكّر|about the lesson;know|knew|عرف|the answer;say|said|قال|hello;tell|told|أخبر|a story;find|found|وجد|a key;sit|sat|جلس|on the chair;stand|stood|وقف|near the door;sleep|slept|نام|early;bring|brought|أحضر|a book;send|sent|أرسل|a message;win|won|فاز|the match;lose|lost|خسر|the game;forget|forgot|نسي|his homework;meet|met|قابل|his friends;pay|paid|دفع|the bill;visit|visited|زار|his grandparents;arrive|arrived|وصل|early;decide|decided|قرر|to study".split(";").forEach(x=>{const[en,past,ar,obj]=x.split("|");VERBS_DB.push({en,past,ar,obj,g:"MS"})});
 let MUTE=(()=>{try{return localStorage.getItem("ta_mute")==="1"}catch(e){return false}})(),AC;
 const tone=(f,d=.12,t="sine",v=.12,w=0)=>{if(MUTE)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),s=AC.currentTime+w;o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(.001,s+d);o.connect(g);g.connect(AC.destination);o.start(s);o.stop(s+d)}catch(e){}};
-const sfx={tick:()=>tone(660,.05,"square",.05),ok:()=>{tone(523,.12,"triangle",.16);tone(784,.22,"triangle",.16,.1)},bad:()=>{tone(220,.25,"sawtooth",.12);tone(165,.3,"sawtooth",.12,.15)},win:()=>[523,659,784,1047].forEach((f,k)=>tone(f,.22,"triangle",.16,k*.12))};
+const party=()=>{try{if(typeof window!=="undefined"&&window.confetti)window.confetti({particleCount:140,spread:80,origin:{y:.65}})}catch(e){}};
+const sfx={flip:()=>tone(520,.07,"triangle",.1),tick:()=>tone(660,.05,"square",.05),ok:()=>{tone(523,.12,"triangle",.16);tone(784,.22,"triangle",.16,.1)},bad:()=>{tone(220,.25,"sawtooth",.12);tone(165,.3,"sawtooth",.12,.15)},win:()=>{[523,659,784,1047].forEach((f,k)=>tone(f,.22,"triangle",.16,k*.12));party()}};
 if(typeof document!=="undefined"&&!window.__taTick){window.__taTick=1;document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("button,a"))sfx.tick()})}
 let STAGE="M";const STG={P:"P",M:"M",S:"S",A1:"P",A2:"M",B1:"S",B2:"S"};
 const F=db=>{if(db!==VERBS_DB)return db;const L=(VL[CURG]||"").split(","),f=db.filter(v=>L.includes(v.en));return f.length>=8?f:db};
@@ -225,6 +225,7 @@ const gradeTopics=c=>{const dict=Object.fromEntries(D(VOC[c]).map(x=>[x.en,x])),
  Object.values(sm).forEach(o=>{if(o.ws.length>=5)r.push({...mkT(c,"sm"+o.q+o.term,"More Words","كلمات أخرى","🧩",o.term,posGames("sm"+o.q+o.term,o.ws,o.q,by(o.q))),k:"v",pos:o.q})});
  ["n","v","a","x"].forEach(q=>r.push({...mkT(c,"mk"+q,"Must-Know "+POSN[q][0],"أهم "+POSN[q][1],POSN[q][2],0,[...posGames("mk"+q,by(q),q,[]),...(q==="n"?[G("pu","Plurals","الجمع","📚",plurSB)]:q==="a"?[G("cp","Comparatives","المقارنة","⚖️",compSB)]:[])]),k:"v",pos:q}));
  if(c==="3AM"||c==="4AM")r.push(...adjDocTopics(c));
+ {const lw=labWords(c),sz=Math.ceil(lw.length/3);[0,1,2].forEach(k=>{const ws=lw.slice(k*sz,(k+1)*sz);if(ws.length>=6)r.push({...mkT(c,"lb"+(k+1),"Adjectives Lab "+["I","II","III"][k],"مختبر الصفات "+["١","٢","٣"][k],"🧪",k+1,labGames("lb"+(k+1),ws,c)),k:"v",pos:"a"})})}
  ["n","v","a","x"].forEach(q=>{const pool=by(q),sz=Math.ceil(pool.length/3);[1,2,3].forEach(t=>{if(r.some(x=>x.k==="v"&&x.pos===q&&x.term===t))return;const ws=pool.slice((t-1)*sz,t*sz);if(ws.length>=4)r.push({...mkT(c,"fl"+q+t,"More "+POSN[q][0],"المزيد من "+POSN[q][1],POSN[q][2],t,posGames("fl"+q+t,ws,q,pool)),k:"v",pos:q})})});
  const o=OPP[c].split(";").map(x=>{const[en,ar,opp,oppAr]=x.split("|");return{en,ar,opp,oppAr}});
  r.push({...mkT(c,"o","Opposites","الأضداد","↔️",3,[G("op","Opposites","الأضداد","↔️",opposites(o))]),k:"v",pos:"a"});
@@ -254,10 +255,10 @@ function Play({game,onDone,onQuit}){
  return html`<div>
   <${Back} onClick=${onQuit} en="Quit" ar="خروج"/>
   <div className="h-3 rounded-full bg-white border border-blue-200 overflow-hidden mb-1"><div className="h-full bg-yellow-400 transition-all" style=${{width:(i/T*100)+"%"}}></div></div>
-  <div className="flex justify-between text-sm font-bold text-blue-800 mb-3"><span>${i+1} / ${T}</span><span>${"🔥".repeat(1+Math.floor(cur*3/qs.length))} · ⭐ ${sc}</span></div>
+  <div className="flex justify-between text-sm font-bold text-blue-800 mb-3"><span>${i+1} / ${T}</span><span>${"🔥".repeat(1+Math.floor(cur*3/qs.length))} · ⭐ ${sc} · ⚡ ${streak}</span></div>
   <div className="rounded-3xl bg-white border-4 border-blue-300 p-5 text-center shadow-lg">
    <div className="font-bold text-blue-900">${q.prompt}</div><div dir="rtl" className="text-blue-600 font-bold mb-2">${q.promptAr}</div>
-   ${pic?html`<div className="text-7xl mt-2">${pic}</div>`:null}${bigT?html`<div className=${(bigT.length>40?"text-lg sm:text-xl":"text-3xl sm:text-4xl")+" font-extrabold text-blue-900 my-3 break-words"}>${bigT}</div>`:null}${say?html`<button onClick=${()=>speak(say)} className="mb-3 w-14 h-14 rounded-full bg-yellow-300 text-3xl shadow active:scale-95">🔊</button>`:null}
+   ${pic?html`<div className="text-7xl mt-2">${pic}</div>`:null}${bigT?html`<div className=${(bigT.length>40?"text-lg sm:text-xl":"text-3xl sm:text-4xl")+" font-extrabold text-blue-900 my-3 break-words"}>${bigT}</div>`:null}${q.hint?html`<div className="text-sm font-semibold text-blue-700 mb-2">💡 ${q.hint}</div>`:null}${say?html`<button onClick=${()=>speak(say)} className="mb-3 w-14 h-14 rounded-full bg-yellow-300 text-3xl shadow active:scale-95">🔊</button>`:null}
    ${q.letters?html`<div className="flex flex-wrap justify-center gap-2 mb-4">${q.letters.map((l,k)=>html`<span key=${k} className="w-10 h-10 grid place-items-center rounded-xl bg-yellow-300 text-blue-900 font-extrabold text-xl shadow">${l}</span>`)}</div>`:null}
    ${q.type==="ord"?html`<div><div className="min-h-[3.5rem] flex flex-wrap gap-2 justify-center rounded-2xl border-4 border-dashed border-blue-300 p-2 mb-3">${bt.map((ix,k)=>html`<button key=${k} disabled=${answered} onClick=${()=>setBt(bt.filter((_,j)=>j!==k))} className="rounded-xl bg-yellow-300 text-blue-900 px-3 py-1 font-bold">${q.words[ix]}</button>`)}</div><div className="flex flex-wrap gap-2 justify-center">${q.words.map((w,ix)=>bt.includes(ix)?null:html`<button key=${ix} disabled=${answered} onClick=${()=>setBt([...bt,ix])} className="rounded-xl bg-blue-100 border-2 border-blue-300 text-blue-900 px-3 py-1 font-bold">${w}</button>`)}</div><button disabled=${answered||bt.length<q.words.length} onClick=${()=>answer(bt.map(ix=>q.words[ix]).join(" "))} className="mt-4 rounded-2xl bg-blue-700 text-white font-extrabold px-6 py-2 disabled:opacity-40">Check ✔</button></div>`:q.type==="mc"?html`<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">${q.opts.filter(o=>!hid.includes(o)).map(o=>{let c="bg-blue-50 border-blue-300 text-blue-900";if(answered){if(norm(o)===norm(q.ans))c="bg-green-100 border-green-500 text-green-800";else if(o===sel)c="bg-red-100 border-red-500 text-red-800";else c="bg-gray-50 border-gray-200 text-gray-400"}return html`<button key=${o} onClick=${()=>answer(o)} className=${"rounded-2xl border-4 p-3 font-extrabold text-lg transition active:scale-95 "+c}>${q.lab?q.lab[o]:o}</button>`})}</div>`
    :html`<div className="flex gap-2 justify-center"><input value=${val} disabled=${answered} onChange=${e=>setVal(e.target.value)} onKeyDown=${e=>{if(e.key==="Enter"&&val.trim())answer(val)}} autoCapitalize="none" autoComplete="off" placeholder="Type here… / اكتب هنا" className=${"flex-1 min-w-0 rounded-2xl border-4 p-3 text-lg font-bold text-center "+(answered?(ok?"border-green-500 bg-green-50":"border-red-500 bg-red-50"):"border-blue-300")}/><button disabled=${answered||!val.trim()} onClick=${()=>answer(val)} className="rounded-2xl bg-blue-700 text-white font-extrabold px-4 disabled:opacity-40">Check ✔</button></div>`}
@@ -323,14 +324,107 @@ function Flash({game,onDone,onQuit}){const names=Object.keys(CAT5),[cat,setCat]=
  <div className="text-center text-sm font-bold text-blue-800 mb-2">👆 Tap a card to flip it · اضغط على البطاقة لتقلبها</div>
  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">${items.map(([w,e])=>{const k=cat+w,on=!!fl[k];return html`<button key=${k} onClick=${()=>{if(!on){speak(w.split(" / ")[0]);sfx.ok()}setFl({...fl,[k]:!on})}} className="fc h-32 w-full"><div className=${"fi "+(on?"on":"")}><div className="ff bg-gradient-to-br from-blue-600 to-sky-500 text-white text-4xl shadow-lg">❓<span className="text-xs font-bold mt-1">${CAT5[cat][0]} ${cat}</span></div><div className="fb bg-white border-4 border-yellow-300 shadow-lg p-1"><div className="text-5xl">${e}</div><div className="font-extrabold text-blue-900 text-center leading-tight text-sm sm:text-base">${w}</div></div></div></button>`})}</div>
  <div className="mt-4 flex items-center justify-between gap-2"><span className="font-bold text-blue-800">${seen} / ${Object.values(CAT5).reduce((a,c)=>a+c[1].split(";").length,0)} cards</span><button onClick=${()=>{sfx.win();onDone(100,100,[])}} className="rounded-2xl bg-blue-700 text-white font-extrabold px-5 py-2 shadow">Finish ✔ (إنهاء)</button></div></div>`}
-function Memory({game,onDone,onQuit}){const [n,setN]=useState(0),[cards,setCards]=useState([]),[open,setOpen]=useState([]),[done,setDone]=useState([]),[moves,setMoves]=useState(0),tool=game.cfg.kind==="tool";
- const start=k=>{const src=pick(tool?MTOOLS:MWORDS,k),cs=[];src.forEach((p,i)=>{cs.push({p:i,t:p.a.t,e:p.a.e});cs.push({p:i,t:p.b.t,e:p.b.e})});setCards(shuffle(cs));setN(k);setOpen([]);setDone([]);setMoves(0)};
- useEffect(()=>{if(open.length===2){const[a,b]=open,ok=cards[a].p===cards[b].p,t=setTimeout(()=>{if(ok){setDone(d=>[...d,cards[a].p]);sfx.ok()}else sfx.bad();setOpen([])},ok?500:900);setMoves(m=>m+1);return()=>clearTimeout(t)}},[open]);
+function Memory({game,onDone,onQuit}){const [n,setN]=useState(0),[cards,setCards]=useState([]),[open,setOpen]=useState([]),[done,setDone]=useState([]),[moves,setMoves]=useState(0),[str,setStr]=useState(0),[mode,setMode]=useState("emoji"),adj=game.cfg.kind==="adj",tool=game.cfg.kind==="tool";
+ const start=k=>{const src=adj?adjPairs(game.cfg.words,mode,k):pick(tool?MTOOLS:MWORDS,k),cs=[];src.forEach((p,i)=>{cs.push({p:i,t:p.a.t,e:p.a.e});cs.push({p:i,t:p.b.t,e:p.b.e})});setCards(shuffle(cs));setN(src.length);setOpen([]);setDone([]);setMoves(0)};
+ useEffect(()=>{if(open.length===2){const[a,b]=open,ok=cards[a].p===cards[b].p,t=setTimeout(()=>{if(ok){setDone(d=>[...d,cards[a].p]);setStr(x=>x+1);sfx.ok()}else{setStr(0);sfx.bad()}setOpen([])},ok?500:900);setMoves(m=>m+1);return()=>clearTimeout(t)}},[open]);
  useEffect(()=>{if(n&&done.length===n){const t=setTimeout(()=>{sfx.win();onDone(Math.max(10,Math.min(100,Math.round(n/Math.max(moves,1)*100))),100,[])},900);return()=>clearTimeout(t)}},[done]);
- const flip=i=>{if(open.length>=2||open.includes(i)||done.includes(cards[i].p))return;if(cards[i].t)speak(cards[i].t.split(" / ")[0]);setOpen([...open,i])};
+ const flip=i=>{if(open.length>=2||open.includes(i)||done.includes(cards[i].p))return;sfx.flip();if(cards[i].t)speak(cards[i].t.split(" / ")[0]);setOpen([...open,i])};
+ if(!n&&adj)return html`<div className="text-center"><${Back} onClick=${onQuit} en="Quit" ar="خروج"/><div className="text-6xl">🧠</div><h2 className="text-2xl font-extrabold text-blue-900 mt-2">Adjective Memory Match</h2><div dir="rtl" className="font-bold text-blue-600">لعبة الذاكرة للصفات</div><label className="block mt-4 font-bold text-blue-900">Mode · النمط</label><select value=${mode} onChange=${e=>setMode(e.target.value)} className="mt-1 rounded-2xl border-4 border-blue-300 bg-white p-2 font-bold text-blue-900"><option value="emoji">Word + Emoji</option><option value="opp">Word + Opposite</option><option value="syn">Word + Synonym</option></select><div><button onClick=${()=>start(6)} className="mt-5 rounded-2xl bg-yellow-400 text-blue-900 font-extrabold px-8 py-3 shadow">Start ▶ · 6 pairs</button></div></div>`;
  if(!n)return html`<div className="text-center"><${Back} onClick=${onQuit} en="Quit" ar="خروج"/><div className="text-6xl">🧠</div><h2 className="text-2xl font-extrabold text-blue-900 mt-2">${tool?"Match the job with its tool":"Match the word with its picture"}</h2><div dir="rtl" className="font-bold text-blue-600 mb-4">${tool?"طابق المهنة مع أداتها":"طابق الكلمة مع صورتها"}</div><div className="grid gap-3 max-w-xs mx-auto">${[[6,"Easy 🙂","سهل"],[8,"Medium 😎","متوسط"],[10,"Hard 🔥","صعب"]].map(([k,en,ar])=>html`<button key=${k} onClick=${()=>start(k)} className="rounded-2xl bg-yellow-400 text-blue-900 font-extrabold py-3 shadow">${en} · ${k} pairs (${ar})</button>`)}</div></div>`;
- return html`<div><${Back} onClick=${onQuit} en="Quit" ar="خروج"/><div className="flex justify-between text-sm font-bold text-blue-800 mb-3"><span>🎯 ${done.length} / ${n}</span><span>👣 ${moves}</span></div>
+ return html`<div><${Back} onClick=${onQuit} en="Quit" ar="خروج"/><div className="flex justify-between text-sm font-bold text-blue-800 mb-3"><span>🎯 ${done.length} / ${n}</span><span>👣 ${moves} · ⚡ ${str}</span></div>
  <div className=${"grid gap-2 "+(n>8?"grid-cols-4 sm:grid-cols-5":"grid-cols-3 sm:grid-cols-4")}>${cards.map((c,i)=>{const on=open.includes(i)||done.includes(c.p);return html`<button key=${i} onClick=${()=>flip(i)} className="fc h-24 sm:h-28 w-full"><div className=${"fi "+(on?"on":"")}><div className="ff bg-gradient-to-br from-blue-600 to-sky-500 text-white text-3xl shadow">❓</div><div className=${"fb p-1 shadow border-4 "+(done.includes(c.p)?"bg-green-100 border-green-400":"bg-white border-yellow-300")}><div className=${c.t?"text-3xl":"text-5xl"}>${c.e}</div>${c.t?html`<div className="font-extrabold text-blue-900 text-xs sm:text-sm text-center leading-tight">${c.t}</div>`:null}</div></div></button>`})}</div></div>`}
+const ADJ_RAW=`A1|good|جيد|quality|good|nice|bad|👍|Something nice that you like.
+A1|bad|سيء|quality|bad|poor|good|👎|Not good; not nice.
+A1|big|كبير|size|big|large|small|🐘|Much larger than normal.
+A1|small|صغير|size|small|little|big|🐭|Not big; a tiny size.
+A1|happy|سعيد|feelings|hap-py|glad|sad|😊|Feeling good and smiling.
+A1|sad|حزين|feelings|sad|unhappy|happy|😢|Feeling unhappy; you may cry.
+A1|hot|حار|weather|hot|warm|cold|🔥|Having a high temperature.
+A1|cold|بارد|weather|cold|chilly|hot|🥶|Having a low temperature.
+A1|tall|طويل (للأشخاص والمباني)|size|tall|high|short|🦒|Having great height, like a giraffe.
+A1|short|قصير|size|short|brief|tall|🧒|Not tall and not long.
+A1|long|طويل (للأشياء والمسافات)|size|long|lengthy|short|📏|Having great length from end to end.
+A1|fast|سريع|speed|fast|quick|slow|🐆|Moving at high speed.
+A1|slow|بطيء|speed|slow|unhurried|fast|🐢|Moving at low speed.
+A1|old|قديم / كبير في السن|age|old|aged|new|👴|Having lived or existed for a long time.
+A1|new|جديد|age|new|fresh|old|🆕|Recently made or bought.
+A1|young|شاب / صغير في السن|age|young|youthful|old|👶|Having lived for only a short time.
+A1|right|صحيح|quality|right|correct|wrong|✅|Correct; with no mistake.
+A1|wrong|خاطئ|quality|wrong|incorrect|right|❌|Not correct; a mistake.
+A1|easy|سهل|difficulty|ea-sy|simple|hard|🧩|Not difficult to do.
+A1|hard|صعب|difficulty|hard|difficult|easy|🪨|Difficult to do or understand.
+A1|beautiful|جميل|appearance|beau-ti-ful|pretty|ugly|🌸|Very nice to look at.
+A1|ugly|قبيح|appearance|ug-ly|unattractive|beautiful|👹|Not nice to look at.
+A2|tired|متعب|feelings|tired|sleepy|energetic|😴|Needing to rest or sleep.
+A2|hungry|جائع|body|hun-gry|starving|full|🍔|Wanting to eat food.
+A2|thirsty|عطشان|body|thirs-ty|parched|refreshed|🥤|Wanting to drink water.
+A2|angry|غاضب|feelings|an-gry|furious|calm|😠|Feeling very cross.
+A2|scared|خائف|feelings|scared|afraid|brave|😨|Feeling fear.
+A2|bored|أشعر بالملل|feelings|bored|fed up|excited|🥱|Not interested; nothing to do.
+A2|excited|متحمس|feelings|ex-ci-ted|thrilled|bored|🤩|Very happy about something coming.
+A2|clean|نظيف|state|clean|spotless|dirty|🧼|Not dirty; fresh.
+A2|dirty|متسخ|state|dir-ty|filthy|clean|🐷|Not clean; covered with mud or dust.
+A2|loud|صاخب / عالٍ|sound|loud|noisy|quiet|📢|Making a lot of noise.
+A2|quiet|هادئ|sound|qui-et|silent|loud|🤫|Making little or no noise.
+A2|heavy|ثقيل|weight|hea-vy|weighty|light|🏋️|Weighing a lot.
+A2|light|خفيف|weight|light|slight|heavy|🪶|Not heavy; easy to lift.
+A2|strong|قوي|body|strong|powerful|weak|💪|Having a lot of power.
+A2|weak|ضعيف|body|weak|feeble|strong|🥀|Not strong.
+A2|expensive|غالي|price|ex-pen-sive|costly|cheap|💎|Costing a lot of money.
+A2|cheap|رخيص|price|cheap|inexpensive|expensive|🏷️|Costing little money.
+A2|safe|آمن|danger|safe|secure|dangerous|🛡️|Not likely to cause harm.
+A2|dangerous|خطير|danger|dan-ger-ous|risky|safe|⚠️|Likely to cause harm.
+A2|careful|حذر / حريص|behaviour|care-ful|cautious|careless|🧐|Paying attention to avoid mistakes.
+B1|brave|شجاع|personality|brave|courageous|cowardly|🦁|Not afraid of danger.
+B1|cowardly|جبان|personality|cow-ard-ly|fearful|brave|🐔|Easily frightened.
+B1|confident|واثق من نفسه|personality|con-fi-dent|self-assured|shy|😎|Believing in yourself.
+B1|shy|خجول|personality|shy|timid|confident|😳|Nervous around other people.
+B1|polite|مهذب|personality|po-lite|courteous|rude|🙏|Having good manners.
+B1|rude|وقح / غير مهذب|personality|rude|impolite|polite|😤|Having bad manners.
+B1|generous|كريم|personality|gen-er-ous|giving|selfish|🎁|Happy to give and share.
+B1|selfish|أناني|personality|sel-fish|greedy|generous|🙅|Caring only about yourself.
+B1|patient|صبور|personality|pa-tient|tolerant|impatient|🧘|Able to wait calmly.
+B1|impatient|غير صبور|personality|im-pa-tient|restless|patient|⏰|Not able to wait calmly.
+B1|honest|صادق / أمين|personality|hon-est|truthful|dishonest|🤝|Always telling the truth.
+B1|dishonest|غير صادق|personality|dis-hon-est|deceitful|honest|🤥|Not telling the truth.
+B1|lazy|كسول|personality|la-zy|idle|hard-working|🛋️|Not wanting to work.
+B1|hard-working|مجتهد|personality|hard-work-ing|diligent|lazy|💼|Working with a lot of effort.
+B1|clever|ذكي|personality|clev-er|smart|silly|🧠|Quick to learn and understand.
+B1|silly|سخيف / أبله|personality|sil-ly|foolish|sensible|🤪|Not serious; not sensible.
+B1|friendly|ودود|personality|friend-ly|kind|unfriendly|🤗|Nice and kind to others.
+B1|curious|فضولي|personality|cu-ri-ous|inquisitive|uninterested|🔍|Wanting to know and learn.
+B1|important|مهم|general|im-por-tant|essential|unimportant|❗|Very necessary or valuable.
+B1|useful|مفيد|general|use-ful|helpful|useless|🛠️|Helping to do something.
+B1|popular|شائع / محبوب|general|pop-u-lar|well-liked|unpopular|🌟|Liked by many people.
+LM|massive|ضخم|landmarks|mas-sive|huge|tiny|🏔️|Very big and heavy.
+LM|ancient|قديم جدًا|landmarks|an-cient|antique|modern|🏺|Very, very old.
+LM|historic|تاريخي|landmarks|his-tor-ic|memorable|ordinary|📜|Important in history.
+LM|famous|مشهور|landmarks|fa-mous|well-known|unknown|⭐|Known by many people.
+LM|modern|حديث|landmarks|mod-ern|up-to-date|ancient|🏙️|New and up to date.
+LM|magnificent|رائع / فخم|landmarks|mag-nif-i-cent|splendid|plain|✨|Very beautiful and grand.
+LM|breathtaking|يخطف الأنفاس|landmarks|breath-tak-ing|amazing|dull|😮|So beautiful it surprises you.
+LM|iconic|أيقوني|landmarks|i-con-ic|legendary|unremarkable|🗼|A famous symbol of a place.`;
+const BOTH=new Set(["right","wrong","good","bad","quiet","clever","polite","friendly","silly","cowardly"]);
+const ADJX=ADJ_RAW.split("\n").map(l=>{const[lvl,word,arabic,category,syl,synonym,opposite,icon,definition]=l.split("|"),n=syl.split("-").length;let type=n===1?"short":n===2&&/y$/.test(word)?"short":"long";if(/ed$/.test(word))type="long";if(BOTH.has(word))type="both";return{lvl,word,arabic,category,syl,synonym,opposite,icon,definition,type}});
+const GL={"3AP":["A1"],"4AP":["A1"],"5AP":["A1","A2"],"1AM":["A1","A2"],"2AM":["A2","B1"],"3AM":["A2","B1"],"4AM":["A2","B1","LM"],"1AS":["B1","LM"],"2AS":["B1","LM"],"3AS":["B1","LM"]};
+const cmp=(w,t)=>t==="long"?"more "+w:/e$/.test(w)?w+"r":/[^aeiou]y$/.test(w)?w.slice(0,-1)+"ier":/^[^aeiou]*[aeiou][^aeiouwy]$/.test(w)?w+w.slice(-1)+"er":w+"er";
+const oppSet=w=>{const q=new Set([w.word,w.opposite]);ADJX.forEach(x=>{if(x.opposite===w.word||x.synonym===w.opposite||x.opposite===w.synonym)q.add(x.word);if(x.word===w.opposite)q.add(x.synonym);if(x.word===w.synonym)q.add(x.opposite)});return q};
+const synSet=w=>{const q=new Set([w.word,w.synonym]);ADJX.forEach(x=>{if(x.synonym===w.word||x.synonym===w.synonym)q.add(x.word);if(x.word===w.synonym)q.add(x.synonym)});return q};
+const oppArena=ws=>()=>ord(ws.filter(w=>w.opposite),12).map(w=>{const bad=oppSet(w);return{...mc(`What is the opposite of "${w.word}"?`,`ما عكس "${w.arabic}"؟`,`${w.icon} ${w.word}`,w.opposite,ADJX.map(x=>x.word).filter(x=>!bad.has(x)),`${w.word} ≠ ${w.opposite}`,`ضد ${w.arabic}: ${w.opposite}`),hint:w.definition}});
+const synArena=ws=>()=>ord(ws.filter(w=>w.synonym),12).map(w=>{const bad=synSet(w);return{...mc(`Which word means the same as "${w.word}"?`,`ما مرادف "${w.arabic}"؟`,`${w.icon} ${w.word}`,w.synonym,ADJX.map(x=>x.word).filter(x=>!bad.has(x)),`${w.word} = ${w.synonym}`,`مرادف ${w.arabic}: ${w.synonym}`),hint:w.definition}});
+const sylG=ws=>()=>ord(ws,12).map(w=>{const n=w.syl.split("-").length;return mc("How many syllables are there?","كم عدد المقاطع الصوتية؟",`${w.icon} ${w.word}`,String(n),["1","2","3","4"],`${w.syl.replace(/-/g," · ")} = ${n}`,`${w.word}: ${n}`)});
+const adjPairs=(ws,mode,k)=>{const used=new Set(),out=[];for(const w of shuffle(ws)){const o=mode==="opp"?w.opposite:mode==="syn"?w.synonym:w.icon;if(!o||used.has(w.word)||used.has(o))continue;used.add(w.word);used.add(o);out.push({a:{t:w.word,e:mode==="emoji"?"":w.icon},b:mode==="emoji"?{t:"",e:w.icon}:{t:o,e:""}});if(out.length>=k)break}return out};
+const labWords=c=>ADJX.filter(w=>(GL[c]||[]).includes(w.lvl));
+const labGames=(p,ws,c)=>[{...G(p+"m","Memory Match","ذاكرة الصفات","🧠",()=>[]),mode:"memory",cfg:{kind:"adj",words:ws}},G(p+"o","Opposites Arena","ساحة الأضداد","⚔️",oppArena(ws)),G(p+"y","Synonyms Explorer","مستكشف المرادفات","🔎",synArena(ws)),...(["2AM","3AM","4AM","1AS","2AS","3AS"].includes(c)&&ws.filter(w=>w.type!=="both").length>=5?[{...G(p+"c","Short vs Long","قصير أم طويل؟","🪣",()=>[]),mode:"sort",cfg:{words:ws}}]:[]),G(p+"s","Count the Syllables","عدّ المقاطع","🔤",sylG(ws))];
+function Classify({game,onDone,onQuit}){const [list]=useState(()=>{let a=game.cfg.words.filter(w=>w.type!=="both");if(a.length<8)a=a.concat(ADJX.filter(w=>w.type!=="both"&&!a.includes(w)));return shuffle(a).slice(0,12)}),[i,setI]=useState(0),[sc,setSc]=useState(0),[st,setSt]=useState(0),[bk,setBk]=useState({short:[],long:[]}),[an,setAn]=useState(null),[fb,setFb]=useState(null),[lock,setLock]=useState(false),w=list[i];
+ const choose=c=>{if(lock)return;setLock(true);const ok=c===w.type;if(ok){setSc(sc+1);setSt(st+1);sfx.ok()}else{setSt(0);sfx.bad()}setFb({ok,txt:`${w.word} → ${cmp(w.word,w.type)}  (${w.type==="short"?"short word: + er":"long word: more +"})`});setAn(w.type);setTimeout(()=>{setBk(b=>({...b,[w.type]:[...b[w.type],w]}));setAn(null);setFb(null);setLock(false);if(i+1>=list.length){sfx.win();onDone(Math.round((sc+(ok?1:0))/list.length*100),100,[])}else setI(i+1)},ok?700:1600)};
+ return html`<div><${Back} onClick=${onQuit} en="Quit" ar="خروج"/>
+ <div className="flex justify-between text-sm font-bold text-blue-800 mb-3"><span>${i+1} / ${list.length}</span><span>⭐ ${sc} · ⚡ ${st}</span></div>
+ <div className="text-center font-bold text-blue-900">Does this word take <b>-er</b> or <b>more</b>? <span dir="rtl" className="block text-blue-600">هل تأخذ الصفة er أم more؟</span></div>
+ <div className=${"mx-auto my-4 max-w-xs rounded-3xl bg-white border-4 border-blue-300 p-5 text-center shadow-lg "+(an==="short"?"fly-l":an==="long"?"fly-r":"")+(fb&&!fb.ok?" shake":"")}><div className="text-7xl">${w.icon}</div><div className="text-3xl font-extrabold text-blue-900 mt-2">${w.word}</div><div dir="rtl" className="text-blue-600 font-bold">${w.arabic}</div></div>
+ <div className="grid grid-cols-2 gap-3"><button disabled=${lock} onClick=${()=>choose("short")} className="rounded-2xl bg-sky-500 text-white font-extrabold py-3 shadow active:scale-95">Short<div className="text-sm">takes -er</div></button><button disabled=${lock} onClick=${()=>choose("long")} className="rounded-2xl bg-yellow-400 text-blue-900 font-extrabold py-3 shadow active:scale-95">Long<div className="text-sm">takes more</div></button></div>
+ ${fb?html`<div className=${"mt-3 rounded-2xl border-4 p-3 text-center font-bold "+(fb.ok?"bg-green-50 border-green-500 text-green-900":"bg-red-50 border-red-500 text-red-900")}>${fb.ok?"🎉 Correct!":"❌ Not quite"} ${fb.txt}</div>`:null}
+ <div className="grid grid-cols-2 gap-3 mt-4">${[["short","🪣 Short bucket","bg-sky-50 border-sky-300"],["long","🪣 Long bucket","bg-yellow-50 border-yellow-300"]].map(([k,t,c])=>html`<div key=${k} className=${"rounded-2xl border-4 p-2 min-h-[5rem] "+c}><div className="font-extrabold text-blue-900 text-sm">${t} · ${bk[k].length}</div><div className="flex flex-wrap gap-1 mt-1">${bk[k].map((x,j)=>html`<span key=${j} className="rounded-full bg-white px-2 py-0.5 text-xs font-bold text-blue-900">${x.icon} ${x.word}</span>`)}</div></div>`)}</div></div>`}
 function App(){
  const [scr,setScr]=useState("home"),[path,setPath]=useState(null),[lvl,setLvl]=useState(null),[topic,setTopic]=useState(null),[game,setGame]=useState(null),[res,setRes]=useState(null);
  const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
@@ -369,7 +463,7 @@ function App(){
  else if(scr==="hub")body=html`<div><${Back} onClick=${()=>setScr(topic.id==="miss"?"kind":"topic")}/><${Title} en=${topic.n} ar=${topic.ar}/>
   <div className="text-center font-bold text-blue-700 mb-3">🎮 Game Hub (اختر لعبة)</div>
   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">${topic.games.map((g,k)=>html`<${Tile} key=${g.id} onClick=${()=>{setGame(g);setScr("play")}} top=${g.e} en=${`Game ${k+1}: ${g.n}`} ar=${g.nAr} sub=${stars(g)}/>`)}</div></div>`;
- else if(scr==="play")body=game.mode==="cards"?html`<${Flash} key=${game.id+Date.now()} game=${game} onDone=${finish} onQuit=${()=>setScr("hub")}/>`:game.mode==="memory"?html`<${Memory} key=${game.id+Date.now()} game=${game} onDone=${finish} onQuit=${()=>setScr("hub")}/>`:html`<${Play} key=${game.id+Date.now()} game=${game} onDone=${finish} onQuit=${()=>setScr("hub")}/>`;
+ else if(scr==="play")body=game.mode==="cards"?html`<${Flash} key=${game.id+Date.now()} game=${game} onDone=${finish} onQuit=${()=>setScr("hub")}/>`:game.mode==="memory"?html`<${Memory} key=${game.id+Date.now()} game=${game} onDone=${finish} onQuit=${()=>setScr("hub")}/>`:game.mode==="sort"?html`<${Classify} key=${game.id+Date.now()} game=${game} onDone=${finish} onQuit=${()=>setScr("hub")}/>`:html`<${Play} key=${game.id+Date.now()} game=${game} onDone=${finish} onQuit=${()=>setScr("hub")}/>`;
  else{const p=res.s/res.t,wrong=res.log.filter(x=>!x.ok),right=res.log.filter(x=>x.ok),vb=verbsOf(topic.c);body=html`<div className="text-center"><div className="text-7xl">${p>=0.8?"🏆":p>=0.5?"👏":"💪"}</div>
   <h2 className="text-3xl font-extrabold text-blue-900 mt-2">${p>=0.8?"Excellent!":p>=0.5?"Good job!":"Keep trying!"}</h2><div dir="rtl" className="text-xl font-bold text-blue-600">${p>=0.8?"ممتاز!":p>=0.5?"عمل جيد!":"واصل المحاولة!"}</div>
   <div className="mt-4 mx-auto max-w-xs rounded-3xl bg-white border-4 border-yellow-400 p-5 shadow-lg"><div className="text-5xl font-extrabold text-blue-800">${res.s} / ${res.t}</div><div className="text-yellow-500 text-3xl">${"★".repeat(Math.ceil(p*3))}${"☆".repeat(3-Math.ceil(p*3))}</div></div>
